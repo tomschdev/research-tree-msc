@@ -11,7 +11,7 @@ updated: 2026-10-15T10:15:40Z
 ## Rationale
 
 The root's mechanism chain begins with shared trust. This review fixes what "blockchain" means in this
-MSc: which technical properties it has (e.g. a shared, append-only ledger; consensus without a trusted
+Msc: which technical properties it has (e.g. a shared, append-only ledger; consensus without a trusted
 intermediary; programmability through smart contracts), and which variants (permissionless or
 permissioned) are in scope. Every later claim that a gain is "blockchain-specific" depends on this
 definition.
