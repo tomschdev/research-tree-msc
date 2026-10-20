@@ -1,5 +1,6 @@
 ---
 id: 2d-sa-economy
+path: 1a2d
 question: "What is South Africa's economy characterised by?"
 parent: 1a-blockchain-markets-coordinate-sa-economy
 candidate-conclusions: [converged, contested]

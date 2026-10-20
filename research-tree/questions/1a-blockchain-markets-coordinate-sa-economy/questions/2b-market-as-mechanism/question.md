@@ -1,5 +1,6 @@
 ---
 id: 2b-market-as-mechanism
+path: 1a2b
 question: "How do markets mechanics work?"
 parent: 1a-blockchain-markets-coordinate-sa-economy
 candidate-conclusions: [converged, contested]

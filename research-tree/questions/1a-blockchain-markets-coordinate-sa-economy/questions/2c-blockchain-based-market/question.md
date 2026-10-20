@@ -1,5 +1,6 @@
 ---
 id: 2c-blockchain-based-market
+path: 1a2c
 question: "What is a blockchain-based market, and what emergent properties does it feature?"
 parent: 1a-blockchain-markets-coordinate-sa-economy
 candidate-conclusions: [converged, contested]

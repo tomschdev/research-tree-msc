@@ -18,7 +18,7 @@ from pathlib import Path
 
 sys.dont_write_bytecode = True  # keep workflow/ free of __pycache__
 from validate_research_tree import (  # noqa: E402
-    BASES, DEFINITIONS, QUESTIONS, ROOT, effective_children, load_tree)
+    BASES, DEFINITIONS, QUESTIONS, ROOT, SEGMENT, children, effective_children, load_tree)
 
 DEFS_PATH = "./" + str(DEFINITIONS.relative_to(ROOT))
 SLUG = re.compile(r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
@@ -59,27 +59,27 @@ def pose(args):
     if args.parent == "~":
         if any(d.is_dir() for d in QUESTIONS.glob("*")):
             fail("root already exists")
-        target, parent_id = QUESTIONS / f"1a-{args.slug}", "~"
+        target, parent_id, path = QUESTIONS / f"1a-{args.slug}", "~", "1a"
     else:
         parent = nodes.get(args.parent)
         if parent is None:
             fail(f"no question '{args.parent}'")
         if parent["c"] is not None:
             fail(f"'{args.parent}' is concluded; pose under an open question")
-        siblings = parent["dir"] / "questions"
-        used = [m.group(1) for d in siblings.glob("*")
-                if (m := re.match(r"^\d+([a-z]+)-", d.name))] if siblings.is_dir() else []
+        used = [segs[-1][1] for s in children(nodes, args.parent)
+                if (segs := SEGMENT.findall(str(nodes[s]["q"].get("path") or "")))]
         i = 0
         while letter(i) in used:
             i += 1
-        target, parent_id = siblings / f"{parent['depth'] + 1}{letter(i)}-{args.slug}", args.parent
+        target, parent_id = parent["dir"] / "questions" / f"{parent['depth'] + 1}{letter(i)}-{args.slug}", args.parent
+        path = f"{parent['q'].get('path')}{parent['depth'] + 1}{letter(i)}"
 
     if target.name in nodes:
         fail(f"id '{target.name}' already exists")
     target.mkdir(parents=True)
     t = now()
     (target / "question.md").write_text(
-        f"---\nid: {target.name}\nquestion: \"{' '.join(args.question.split())}\"\nparent: {parent_id}\n"
+        f"---\nid: {target.name}\npath: {path}\nquestion: \"{' '.join(args.question.split())}\"\nparent: {parent_id}\n"
         f"candidate-conclusions: [{', '.join(candidates)}]\n"
         f"candidate-conclusion-definitions-path: {DEFS_PATH}\n"
         f"opened: {t}\nupdated: {t}\n---\n\n## Rationale\n\n")

@@ -17,6 +17,7 @@ OPEN_STYLE = "fill:#f5f5f5,stroke:#999,color:#333"
 
 
 def diagram(definitions, nodes):
+    nodes = dict(sorted(nodes.items(), key=lambda kv: str(kv[1]["q"].get("path") or "")))
     ids = {nid: f"n{i}" for i, nid in enumerate(nodes)}
     out = ["graph TD"]
     for nid, n in nodes.items():

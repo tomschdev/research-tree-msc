@@ -1,4 +1,4 @@
-## What is Blockchain?
+# What is Blockchain?
 
 Blockchain is one the most notorious technology buzzwords of the early 21st century.  
 
@@ -29,7 +29,7 @@ specific system.
 The concept of blockchain was popularised by the first major application that
 developed/utilised its foundational properties: Bitcoin. [@Nakamoto2008Bitcoin]
 introduces Bitcoin as a system for electronic transactions without relying on
-trust. The work builds on the existing concept of coins as a chain of digital
+trust. The work builds on the existing concept of coins as a chain of digita
 signatures and introduces a novel solution to prevent double-spending by way of
 a peer-to-peer network with a proof-of-work consensus algorithm which makes it computationally infeasible for an
 attacker to capture the network and its distributed state.
@@ -42,54 +42,6 @@ bitcoin.
 ## What is the minimal set of properties of a blockchain architecture?
 
 When breaking blockchain down to core components, one should actually be studying DLT systems.
-Blockchain systems are commonly considered a subset of Distributed Ledger Technology, a broader definition that encompasses the significant variations seen in the core design of blockchain systems.
-[@Rauchs2018DLT] compiles a comprehensive overview of DLT, yielded the following learnings:
+Blockchain systems are commonly considered a subset of Distributed Ledger Technology, a broader definition that encompasses the significant variations seen in the core design of blockchain systems. 3a-what-is-dlt elaborates.
 
-A DLT is formally defined as a system of electronic records that:
-- enables a network of independent participants to establish authoritative ordering of cryptographically validated transactions.
-- ensures persistence by replicating data across mulitple nodes
-- maintains tamper-evidence by linking records with cryptographic hashes
-- generates a shared state - the ledger - which is an authoritative version which does not rely on a trusted central party.
-
-"A Distributed Ledger Technology (DLT) system is fundamentally a multi-party 'consensus machine'—a system of electronic records designed to enable a network of independent participants to establish consensus around the authoritative ordering of cryptographically-validated ('signed') transactions in an adversarial environment, without relying on a central coordinator." [@Rauchs2018DLT]
-
-Key criteria and necessary conditions are as follows:
-- shared recordkeeping: enables multiple separate entities to collectively create, maintain and update an authoritative set of shared records.
-- multi-party consensus: enables agreement on shared records without a central authority, either permissionlessly (without prior trust), or permissioned (preapproved record producers)
-- independent validation: allows each fully validating participant (auditor/validtor) to independently verify transaction states and system integrity from genesis.
-- tamper-evidence: enables participants to trivially detect any non-consensual modifications to past records using cryptogrpahic linkages
-- tamper-resistance: makes it structurally infeaisbale for a single party to unilaterally alter previous transascitons 
-
-Three layers comprise all DLT systems: Protocol Layer, Network Layer, Data Layer.
-
-Protocol Layer: The foundational, software-defined ruleset that codifies the system's constitutional design, governance mechanisms, and initial operational parameters.
-Network Layer: The operational environment consisting of interconnected, heterogeneous actors and processes that implement protocol rules to communicate, process transactions, reach consensus, and maintain system state.
-Data Layer: The emergent, shared information structure—the ledger—resulting from network execution, which stores persistent, tamper-evident, time-ordered transaction data synchronised across participants.
-
-The protocol layer is designed by developers of the blockchain-system with intent for the resulting protocol to be run by a network of participants, comprising the network layer, in order to support the decentralised accumulation of the contents in accordance with the design of the protocol layer, to result in the maintenance of the data layer.
-
-
-## Protocol Layer
-The foundational, constitutional ruleset of a DLT system, that codifies how a system is initialises, how rules are defined and how the system evolves over time.
-
-Components of the protocol layer are either genesis components or alteration components. The genesis components, which apply static unchanging rules from the initiation of the system, are: inter-system dependencies, codebase creation and rule initiation. The alteration components, which are mechanisms for adapting dynamic properties of the system (which may in themselves be mechanisms) are protocol governance and protocol change.
-
-### Inter-system Dependencies
-Defines the operational boundaries of the system, specifying whether the DLT system is self-sufficient or dependent upon external systems to function properly.
-
-### Codebase Creation 
-The development of foundational software rulesets which are either constructed from scratch or adapted.
-
-### Rule Initiation
-Establishes the initial ruleset, parameters, and first record upon which the system operates at launch.
-
-### Protocol Governance
-The set of decision-making processes (often conducted off-chain) that determines how rules are evaluated, negotiated, and modified by system actors.
-
-### Procotol Change
-The formal mechanism utilised to implement agreed-upon modifications to the underlying software ruleset across the system.
-
-
-## Network Layer
-The practical implementation and exectution of protocol rules by interconnected participants. Structured into three components:
 

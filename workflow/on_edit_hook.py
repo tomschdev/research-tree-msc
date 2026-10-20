@@ -1,8 +1,10 @@
 #!/usr/bin/env python3
-"""Claude Code PostToolUse hook: keep `updated` current and validate after edits.
+"""Claude Code PostToolUse hook: keep `updated` current, follow `parent` changes, validate.
 
 Wired in .claude/settings.json. Reads the hook payload on stdin and acts only on
-research-tree/**/question.md and conclusion.md. Exit 2 sends violations to Claude.
+research-tree/**/question.md and conclusion.md. After a question.md edit it runs
+sync_research_tree_paths.py, which moves a question whose `parent` changed and
+recomputes `path` down the tree. Exit 2 sends errors and violations to Claude.
 """
 import json
 import subprocess
@@ -26,6 +28,11 @@ def main():
         return 0
     if path.name == "question.md":
         subprocess.run([sys.executable, str(WORKFLOW / "manage_research_tree.py"), "touch", str(path)])
+        sync = subprocess.run([sys.executable, str(WORKFLOW / "sync_research_tree_paths.py")],
+                              capture_output=True, text=True)
+        if sync.returncode != 0:
+            print(sync.stderr, file=sys.stderr, end="")
+            return 2
     result = subprocess.run([sys.executable, str(WORKFLOW / "validate_research_tree.py")],
                             capture_output=True, text=True)
     if result.returncode != 0:

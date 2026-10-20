@@ -1,5 +1,6 @@
 ---
 id: 1a-blockchain-markets-coordinate-sa-economy
+path: 1a
 question: "How can blockchain-based markets coordinate South Africa's economy?"
 parent: ~
 candidate-conclusions: [supported, refuted]
@@ -8,7 +9,7 @@ opened: 2026-10-15T08:40:12Z
 updated: 2026-10-15T08:49:19Z
 ---
 
-## Rationale
+# Rationale
 
 Blockchain-based markets are claimed, theoretically and in places empirically, to coordinate
 economic activity. The mechanism runs from shared trust to programmable rules, then to incentives
@@ -42,6 +43,5 @@ What each candidate conclusion means here:
   Africa-specific barriers (cost, connectivity, regulation, usability, trust in the technology
   itself) cancel it out.
 
-## Rationale Rewrite
-
+# Rationale Rewrite
 TODO

@@ -1,5 +1,6 @@
 ---
 id: 2a-what-is-blockchain
+path: 1a2a
 question: "What is blockchain?"
 parent: 1a-blockchain-markets-coordinate-sa-economy
 candidate-conclusions: [converged, contested]

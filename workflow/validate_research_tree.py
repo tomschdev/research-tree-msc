@@ -18,9 +18,12 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 QUESTIONS = ROOT / "research-tree" / "questions"
 DEFINITIONS = ROOT / "workflow" / "candidate-conclusion-definitions.yaml"
-NAME = re.compile(r"^(\d+)([a-z]+)-[a-z0-9]+(?:-[a-z0-9]+)*$")
+NAME = re.compile(r"^(\d+[a-z]+)-[a-z0-9]+(?:-[a-z0-9]+)*$")
+PATH = re.compile(r"^(?:\d+[a-z]+)+$")
+SEGMENT = re.compile(r"(\d+)([a-z]+)")
 BASES = ("literature", "activity", "synthesis")
-QUESTION_FIELDS = ["id", "question", "parent", "candidate-conclusions",
+SYNC_HINT = " (run python3 workflow/sync_research_tree_paths.py)"
+QUESTION_FIELDS = ["id", "path", "question", "parent", "candidate-conclusions",
                    "candidate-conclusion-definitions-path", "opened", "updated"]
 
 
@@ -92,15 +95,24 @@ def git(*args):
 
 
 def frozen_violation(node):
-    """Rule 5: question.md must not change once conclusion.md is committed."""
+    """Rule 5: question.md must not change once conclusion.md is committed.
+
+    `id`, `parent` and `path` are exempt: they record where the question sits, and
+    change when a subtree is reparented.
+    """
     q, c = node["dir"] / "question.md", node["dir"] / "conclusion.md"
     added = git("log", "--diff-filter=A", "--format=%H", "-1", "--", str(c))
     if not added:
         return None  # conclusion not committed yet; the question may change in the same commit
-    if git("log", "--format=%H", f"{added}..HEAD", "--", str(q)):
+    then = git("show", f"{added}:./{q.relative_to(ROOT)}")  # ./ = relative to ROOT, not the git top
+    if not then:
+        return None  # question.md not present at that commit under this name
+
+    def substance(text):
+        return re.sub(r"^(id|parent|path): .*\n?", "", text.strip(), flags=re.M)
+
+    if substance(then) != substance(q.read_text()):
         return "question.md changed after conclusion.md was committed"
-    if git("status", "--porcelain", "--", str(q)):
-        return "question.md has uncommitted changes but the question is concluded"
     return None
 
 
@@ -122,21 +134,13 @@ def load_tree():
         dirs = sorted(d for d in qdir.iterdir() if d.is_dir())
         if parent is None and len(dirs) != 1:
             errors.append(f"{qdir.relative_to(ROOT)}: rule 1: expected exactly one root question, found {len(dirs)}")
-        letters = {}
         for d in dirs:
             rel = d.relative_to(ROOT)
             if not (d / "question.md").is_file():
                 errors.append(f"{rel}: rule 1: every directory under questions/ must hold question.md")
                 continue
-            m = NAME.match(d.name)
-            if not m:
+            if not NAME.match(d.name):
                 errors.append(f"{rel}: rule 2: name '{d.name}' is not <depth><letter>-<slug>")
-            else:
-                if int(m.group(1)) != depth:
-                    errors.append(f"{rel}: rule 2: depth prefix {m.group(1)} but nesting depth is {depth}")
-                if m.group(2) in letters:
-                    errors.append(f"{rel}: rule 2: sibling letter '{m.group(2)}' also used by {letters[m.group(2)]}")
-                letters[m.group(2)] = d.name
             if d.name in nodes:
                 errors.append(f"{rel}: rule 2: id '{d.name}' already used at {nodes[d.name]['rel']}")
                 continue
@@ -194,8 +198,31 @@ def validate(definitions, nodes):
             err(3, f"fields out of order; expected {', '.join(QUESTION_FIELDS)}")
         if q.get("id") != nid:
             err(3, f"id '{q.get('id')}' != directory name '{nid}'")
-        if q.get("parent") != n["parent"]:
-            err(3, f"parent '{q.get('parent')}' != enclosing question '{n['parent']}'")
+
+        # rule 2 — path = parent's path + <depth><letter>, letter unique among siblings
+        path = str(q.get("path") or "")
+        parent_path = str(nodes[n["parent"]]["q"].get("path") or "") if n["parent"] else ""
+        if not PATH.match(path):
+            err(2, f"path '{path}' is not a sequence of <depth><letter>{SYNC_HINT}")
+        elif SEGMENT.findall(path)[:-1] != SEGMENT.findall(parent_path):
+            err(2, f"path '{path}' does not extend the parent's path '{parent_path}'{SYNC_HINT}")
+        elif int(SEGMENT.findall(path)[-1][0]) != n["depth"]:
+            err(2, f"path '{path}' ends at depth {SEGMENT.findall(path)[-1][0]} "
+                   f"but nesting depth is {n['depth']}{SYNC_HINT}")
+        else:
+            clash = [s for s in children(nodes, n["parent"]) if s != nid and nodes[s]["q"].get("path") == path]
+            if clash:
+                err(2, f"path '{path}' also used by sibling '{clash[0]}'{SYNC_HINT}")
+            m = NAME.match(nid)
+            if m and m.group(1) != SEGMENT.findall(path)[-1][0] + SEGMENT.findall(path)[-1][1]:
+                err(2, f"id prefix '{m.group(1)}' does not match the end of path '{path}'{SYNC_HINT}")
+        declared = q.get("parent")
+        if declared != n["parent"]:
+            err(3, f"parent '{declared}' != enclosing question '{n['parent']}'{SYNC_HINT}")
+            if declared in nodes:
+                want = str(nodes[declared]["q"].get("path") or "")
+                if SEGMENT.findall(path)[:-1] != SEGMENT.findall(want):
+                    err(2, f"path '{path}' does not extend declared parent '{declared}' path '{want}'{SYNC_HINT}")
         if not q.get("question"):
             err(3, "question text is empty")
         if q.get("candidate-conclusion-definitions-path") != expected_defs:
