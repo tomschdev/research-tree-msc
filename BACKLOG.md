@@ -1,0 +1,9 @@
+- msc: post-quantum cryptography in 'fundamentals-of-cryptogrpahy'
+- msc: read chf paper - more notes by hand 
+- msc: note SoK cryptography
+- msc: note bitcoin paper
+- msc: short section on deviation of netowrks from blockchain
+- start paper: 'systematic review of blockchain in SA'
+  - contains blockchain deep dive
+  - taxnonmy of blockchain applications, categirised in sectors
+  - 

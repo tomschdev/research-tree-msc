@@ -38,6 +38,7 @@ concluded `bypassed`; the child answers in its place.
     sync_research_tree_paths.py          # follows `parent` changes; recomputes `path` and ids
     render_research_tree.py              # mermaid diagram
     manage_research_tree.py              # pose / conclude / reword / touch (owns ids, letters, timestamps)
+    compress_pdf.py                      # shrink scanned notes in place before committing
     on_edit_hook.py                      # Claude Code PostToolUse hook
     check_hook.py                        # Claude Code SessionStart/UserPromptSubmit hook: validates,
                                          #   so edits made outside Claude (e.g. vim) surface early
@@ -167,4 +168,5 @@ python3 workflow/render_research_tree.py --svg    # + tree.svg (mmdc, else npx m
 python3 workflow/manage_research_tree.py pose --parent <id|~> --slug <slug> --question "<text>" --candidates a,b
 python3 workflow/manage_research_tree.py conclude <id> --conclusion <id> [--basis B] [--reason R] [--bypassed-by C]
 python3 workflow/manage_research_tree.py reword <id> --question "<text>"   # open questions only
+python3 workflow/compress_pdf.py [--quality printer] <file.pdf> ...       # shrink scans in place
 ```
